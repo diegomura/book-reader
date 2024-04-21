@@ -1,38 +1,77 @@
-import time
+import ebooklib
+from bs4 import BeautifulSoup
+from ebooklib import epub
 from pydispatch import dispatcher
 
-# Simulate process converted eput to text
-story = """
-In a quaint little town nestled between rolling hills and dense forests, lived two friends named Sarah and David. They were inseparable since childhood, sharing laughter, dreams, and the occasional secret. One gloomy evening, the sky painted in shades of gray, they found themselves in Sarah's cozy living room, engrossed in conversation.
+METADATA_FIELDS = ["title", "creator", "identifier", "date", "description"]
 
-As the raindrops tapped against the window pane, the room echoed with the warmth of their friendship. The narrator, a silent observer to their tales, watched as Sarah and David exchanged stories of their week, relishing the comforting ambiance of the crackling fireplace.
+ELEMENT_TYPES = {
+  "h1": "title",
+  "h2": "title",
+  "h3": "title",
+  "h4": "title",
+  "h5": "title",
+  "h6": "title",
+  "p": "paragraph"
+}
 
-"So, David," Sarah said, her eyes sparkling with mischief, "have you heard about the old mansion on the outskirts of town? They say it's haunted."
+def get_metadata(book):
+  metadata = {}
 
-David chuckled, "Come on, Sarah. Ghost stories? You know I don't believe in that stuff."
+  for field in METADATA_FIELDS:
+    data = book.get_metadata('DC', field)
 
-As their banter continued, the wind outside grew more insistent, whispering secrets that only the bravest trees dared to share. The narrator could sense a subtle tension building in the room, a prelude to an unexpected twist in their evening.
+    if data:
+      metadata[field] = data[0][0]
+    else:
+      metadata[field] = ""
 
-Just as Sarah began to describe the eerie sounds rumored to emanate from the mansion, a sudden, thunderous boom shook the entire house. The lights flickered, casting eerie shadows on the walls.
+  return metadata
 
-Startled, Sarah and David exchanged wide-eyed glances. "Was that thunder?" Sarah asked, her voice barely audible over the howling wind.
+def get_content(book):
+  chapters = []
 
-David nodded, attempting to ease the tension with a reassuring smile. "Just a storm, nothing to worry about."
+  items = book.get_items_of_type(ebooklib.ITEM_DOCUMENT)
 
-But before anyone could say another word, a gust of wind burst through the slightly ajar door, slamming it shut with a resounding bang. The room fell into sudden darkness, the only source of light now the occasional lightning that danced across the sky.
+  for item in items:  
+    chapter = []
 
-As the door closed, Sarah and David exchanged a glance, their expressions now a mix of surprise and concern. The narrator, a silent witness to the unfolding events, could feel the atmosphere thicken with an unspoken uncertainty.
+    content = item.get_content().decode("utf-8")
 
-"Maybe we should check outside," David suggested, his voice betraying a hint of nervousness.
+    soup = BeautifulSoup(content, "html.parser")
+  
+    for element in soup.html.descendants:
+      if element.name in ['p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6']:
+        section = {}
+        value = element.get_text().replace(u'\xa0', u'')
 
-Sarah nodded, and together they cautiously approached the door. With a collective breath, they opened it to reveal a world transformed by the storm. Raindrops lashed against their faces, and the wind howled in protest, carrying with it the whispers of the night.
+        if not value: continue
 
-The adventure that had started as a cozy evening by the fireplace had taken an unexpected turn. The thunder, the closing door, and the mysterious mansion on the outskirts of town left an indelible mark on Sarah and David's friendship, weaving a tale that would be retold on stormy nights for years to come.
-"""
+        section["type"] = ELEMENT_TYPES[element.name]
+        section["value"] = value
+ 
+        chapter.append(section)
 
-def process_epub(sender):
-  print('processing epub')
-  time.sleep(2)
+    if len(chapter) == 0: continue
+
+    chapters.append(chapter)
+
+  return chapters
+
+
+def process_epub(sender, data):
+  print(f'processing epub, {data}')
+
+  book = epub.read_epub(data)
+
+  metadata = get_metadata(book)
+  content = get_content(book)
+
+  # for testing
+  content = content[:4]
+
+  story = { "metadata": metadata, "content": content }
+
   dispatcher.send(signal='book_data', data=story)
 
 

@@ -25,15 +25,19 @@ def process_tts(sender, data):
   print(f'tts on {data}')
 
   id = data['id']
-  text = data['text']
-  voice = data['voice']
+  text = data['value']
+
+  # TODO: add voices once supported
+  # voice = data['voice']
+
+  voice = "narrator"
   speaker = get_speaker(voice)
   file_path = os.path.join(os.path.dirname(__file__), f'{id}.wav')
 
   tts.tts_to_file(
     text=text,
     speaker_wav=speaker,
-    language="en",
+    language="es",
     file_path=file_path,
   )
 

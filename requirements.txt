@@ -1,3 +1,5 @@
 PyDispatcher
 torch
 TTS
+EbookLib
+bs4
