@@ -3,3 +3,6 @@ torch
 TTS
 EbookLib
 bs4
+tinydb
+soundfile
+numpy

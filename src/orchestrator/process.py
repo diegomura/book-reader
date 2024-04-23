@@ -1,23 +1,14 @@
-from pydispatch import dispatcher
+def start(dependencies):
+  db = dependencies["db"]
+  dispatcher = dependencies["dispatcher"]
 
-def orchestrate_book(sender, data):
-  print(f'orchestrating book')
+  def process(sender, data):
+    book_id = data
+    fragments = db.get_fragments(book_id=book_id)
 
-  script = [element for chapter in data["content"] for element in chapter]
+    for fragment in fragments:
+      dispatcher.send(signal='tts', data=fragment.doc_id)
 
-  id = 0
+    dispatcher.send(signal='attach', data=book_id)
 
-  for item in script:
-    item["id"] = id
-    dispatcher.send(signal='tts', data=item)
-    id += 1
-
-
-  print(f'book orchestrated')
-
-
-dispatcher.connect(
-  orchestrate_book,
-  signal='book_data',
-  sender=dispatcher.Any,
-)
+  dispatcher.connect(process, signal='orchestrate', weak=False)

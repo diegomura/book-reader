@@ -1,9 +1,10 @@
 import ebooklib
 from bs4 import BeautifulSoup
 from ebooklib import epub
-from pydispatch import dispatcher
 
 METADATA_FIELDS = ["title", "creator", "identifier", "date", "description"]
+
+VALID_ELEMENTS = ['p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6']
 
 ELEMENT_TYPES = {
   "h1": "title",
@@ -41,16 +42,15 @@ def get_content(book):
     soup = BeautifulSoup(content, "html.parser")
   
     for element in soup.html.descendants:
-      if element.name in ['p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6']:
-        section = {}
+      if element.name in VALID_ELEMENTS:
         value = element.get_text().replace(u'\xa0', u'')
 
         if not value: continue
 
-        section["type"] = ELEMENT_TYPES[element.name]
-        section["value"] = value
- 
-        chapter.append(section)
+        chapter.append({ 
+          "value": value, 
+          "type": ELEMENT_TYPES[element.name] 
+        })
 
     if len(chapter) == 0: continue
 
@@ -58,25 +58,20 @@ def get_content(book):
 
   return chapters
 
+def start(dependencies):
+  db = dependencies["db"]
+  dispatcher = dependencies["dispatcher"]
 
-def process_epub(sender, data):
-  print(f'processing epub, {data}')
+  def process(sender, data):
+    book = epub.read_epub(data, {"ignore_ncx": True})
+    metadata = get_metadata(book)
+    content = get_content(book)
 
-  book = epub.read_epub(data)
+    # for testing
+    content = content[:6]
+    book = { "metadata": metadata, "content": content }
+    book_id = db.upsert_book(book)
 
-  metadata = get_metadata(book)
-  content = get_content(book)
+    dispatcher.send(signal='orchestrate', data=book_id)
 
-  # for testing
-  content = content[:4]
-
-  story = { "metadata": metadata, "content": content }
-
-  dispatcher.send(signal='book_data', data=story)
-
-
-dispatcher.connect(
-  process_epub,
-  signal='epub_file',
-  sender=dispatcher.Any
-)
+  dispatcher.connect(process, signal='epub', weak=False)

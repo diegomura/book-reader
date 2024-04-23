@@ -1,6 +1,5 @@
 import os
 import torch
-from os.path import isfile, join
 from TTS.api import TTS
 from pydispatch import dispatcher
 
@@ -21,28 +20,31 @@ def get_speaker(voice):
 
   return [os.path.join(voice_path, f) for f in files]
 
-def process_tts(sender, data):
-  print(f'tts on {data}')
+def start(dependencies):
+  db = dependencies["db"]
 
-  id = data['id']
-  text = data['value']
+  def process(sender, data):
+    fragment_id = data
+    fragment = db.get_fragment(fragment_id)
 
-  # TODO: add voices once supported
-  # voice = data['voice']
+    # If fragment was processed, skip it
+    if fragment["file"]: return
 
-  voice = "narrator"
-  speaker = get_speaker(voice)
-  file_path = os.path.join(os.path.dirname(__file__), f'{id}.wav')
+    # TODO: add voices once supported
+    # voice = data['voice']
 
-  tts.tts_to_file(
-    text=text,
-    speaker_wav=speaker,
-    language="es",
-    file_path=file_path,
-  )
+    voice = "narrator"
+    speaker = get_speaker(voice)
+    file_name = f'{fragment["book_id"]}_{fragment["chapter_id"]}_{fragment["index"]}.wav'
+    file_path = os.path.join(os.path.dirname(__file__), file_name)
 
-dispatcher.connect(
-  process_tts,
-  signal='tts',
-  sender=dispatcher.Any,
-)
+    tts.tts_to_file(
+      text=fragment['value'],
+      speaker_wav=speaker,
+      language="es",
+      file_path=file_path,
+    )
+
+    db.update_fragment(fragment_id, file=file_path)
+
+  dispatcher.connect(process, signal='tts', weak=False)
