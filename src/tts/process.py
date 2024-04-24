@@ -28,7 +28,7 @@ def start(dependencies):
     fragment = db.get_fragment(fragment_id)
 
     # If fragment was processed, skip it
-    if fragment["file"]: return
+    if "file" in fragment: return
 
     # TODO: add voices once supported
     # voice = data['voice']
