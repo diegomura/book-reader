@@ -36,7 +36,7 @@ def start(dependencies):
     # TODO: add voices once supported
     # voice = data['voice']
 
-    voice = "diego"
+    voice = "william"
     speaker = get_speaker(voice)
     file_name = f'{fragment["book_id"]}_{fragment["chapter_id"]}_{fragment["index"]}.wav'
     file_path = os.path.join(os.path.dirname(__file__), file_name)

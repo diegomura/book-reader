@@ -1,11 +1,7 @@
 import os
-import epub
-import orchestrator
-import tts
-import attacher
-import validator
 from db import db
 from pydispatch import dispatcher
+from processes import epub, orchestrator, tts, attacher, validator
 
 dependencies = { "db": db, "dispatcher": dispatcher }
 
