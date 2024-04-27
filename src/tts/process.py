@@ -8,9 +8,10 @@ device = "cuda" if torch.cuda.is_available() else "cpu"
 tts = TTS("tts_models/multilingual/multi-dataset/xtts_v2").to(device)
 
 speakers = {
-  'narrator': './voices/william',
+  'william': './voices/william',
   'sarah': './voices/emma',
   'david': './voices/geralt',
+  'diego': './voices/diego',
 }
 
 def get_speaker(voice):
@@ -24,16 +25,18 @@ def start(dependencies):
   db = dependencies["db"]
 
   def process(sender, data):
-    fragment_id = data
+    print('tts', data)
+    force = data["force"]
+    fragment_id = data["fragment_id"]
     fragment = db.get_fragment(fragment_id)
 
     # If fragment was processed, skip it
-    if "file" in fragment: return
+    if not force and "file" in fragment: return
 
     # TODO: add voices once supported
     # voice = data['voice']
 
-    voice = "narrator"
+    voice = "diego"
     speaker = get_speaker(voice)
     file_name = f'{fragment["book_id"]}_{fragment["chapter_id"]}_{fragment["index"]}.wav'
     file_path = os.path.join(os.path.dirname(__file__), file_name)
@@ -43,8 +46,12 @@ def start(dependencies):
       speaker_wav=speaker,
       language="es",
       file_path=file_path,
+      speed=1.0, # TODO: play with different speeds
+      split_sentences=True # TODO: make clever sentence splitting by respecting maximums
     )
 
     db.update_fragment(fragment_id, file=file_path)
+
+    dispatcher.send(signal='validate', data=fragment_id)
 
   dispatcher.connect(process, signal='tts', weak=False)

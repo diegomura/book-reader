@@ -7,7 +7,7 @@ def start(dependencies):
     fragments = db.get_fragments(book_id=book_id)
 
     for fragment in fragments:
-      dispatcher.send(signal='tts', data=fragment.doc_id)
+      dispatcher.send(signal='tts', data={ "fragment_id": fragment.doc_id, "force": False })
 
     dispatcher.send(signal='attach', data=book_id)
 

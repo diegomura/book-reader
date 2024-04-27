@@ -16,8 +16,6 @@ def start(dependencies):
     start_silence = np.zeros(int(sampling_rate * 4), dtype=np.int16)
     chapter_silence = np.zeros(int(sampling_rate * 4), dtype=np.int16)
 
-    print(chapter_silence)
-
     narration_data = [start_silence]
 
     for chapter in chapters:

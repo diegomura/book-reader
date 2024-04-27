@@ -42,12 +42,15 @@ def upsert_book(book):
 def get_chapters(book_id):
     return chapters_table.search(Query().book_id == book_id)
 
+def get_all_fragments():
+    return fragments_table.all()
+
 def get_fragments(book_id=None, chapter_id=None):
     conditions = {}
 
     if book_id is not None: conditions['book_id']=book_id
     if chapter_id is not None: conditions['chapter_id']=chapter_id
-    
+
     return fragments_table.search(Query().fragment(conditions))
 
 def get_fragment(id):

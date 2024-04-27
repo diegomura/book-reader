@@ -34,22 +34,22 @@ def get_content(book):
 
   items = book.get_items_of_type(ebooklib.ITEM_DOCUMENT)
 
-  for item in items:  
+  for item in items:
     chapter = []
 
     content = item.get_content().decode("utf-8")
 
     soup = BeautifulSoup(content, "html.parser")
-  
+
     for element in soup.html.descendants:
       if element.name in VALID_ELEMENTS:
         value = element.get_text().replace(u'\xa0', u'')
 
         if not value: continue
 
-        chapter.append({ 
-          "value": value, 
-          "type": ELEMENT_TYPES[element.name] 
+        chapter.append({
+          "value": value,
+          "type": ELEMENT_TYPES[element.name]
         })
 
     if len(chapter) == 0: continue
@@ -68,7 +68,7 @@ def start(dependencies):
     content = get_content(book)
 
     # for testing
-    content = content[:6]
+    content = content[2:3]
     book = { "metadata": metadata, "content": content }
     book_id = db.upsert_book(book)
 
