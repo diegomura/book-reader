@@ -59,6 +59,10 @@ def get_book_progress(id):
 def get_chapters(book_id):
     return chapters_table.search(Query().book_id == book_id)
 
+def update_chapter(id, file):
+    return chapters_table.update({ "file": file }, doc_ids=[id])
+
+
 def get_all_fragments():
     return fragments_table.all()
 
