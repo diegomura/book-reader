@@ -69,7 +69,7 @@ def start(dependencies):
     content = get_content(book)
 
     # for testing
-    content = content[3:4]
+    # content = content[3:4]
     book = { "metadata": metadata, "content": content }
     book_id = db.upsert_book(book)
 
