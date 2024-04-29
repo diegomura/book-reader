@@ -1,31 +1,12 @@
 import os
-import torch
-from TTS.api import TTS
+import time
 from pydispatch import dispatcher
-
-device = "cuda" if torch.cuda.is_available() else "cpu"
-
-tts = TTS("tts_models/multilingual/multi-dataset/xtts_v2").to(device)
-
-speakers = {
-  'william': './voices/william',
-  'sarah': './voices/emma',
-  'david': './voices/geralt',
-  'diego': './voices/diego',
-  'alfredo': './voices/alfredo',
-  'phil': './voices/phil',
-  'stephen': './voices/stephen',
-}
-
-def get_speaker(voice):
-  cwd = os.path.dirname(__file__)
-  voice_path = os.path.join(cwd, speakers[voice])
-  files = os.listdir(voice_path)
-
-  return [os.path.join(voice_path, f) for f in files]
+from .model import model
 
 def start(dependencies):
   db = dependencies["db"]
+
+  model.register_speaker('phil', './voices/phil')
 
   def process(sender, data):
     force = data["force"]
@@ -35,22 +16,29 @@ def start(dependencies):
     # If fragment was processed, skip it
     if not force and "file" in fragment: return
 
-    # TODO: add voices once supported
-    # voice = data['voice']
-
-    voice = "phil"
-    speaker = get_speaker(voice)
     file_name = f'{fragment["book_id"]}_{fragment["chapter_id"]}_{fragment["index"]}.wav'
     file_path = os.path.join(os.path.dirname(__file__), file_name)
+    text = fragment['value']
 
-    tts.tts_to_file(
-      text=fragment['value'],
-      speaker_wav=speaker,
-      language="en",
-      file_path=file_path,
-      speed=1.0, # TODO: play with different speeds
-      split_sentences=True # TODO: make clever sentence splitting by respecting maximums
-    )
+    language = 'en'
+    start_time = time.time()
+
+    #  Split text into sentences
+    sens = model.split_into_sentences(text)
+    print(sens)
+
+    wavs = []
+    for sen in sens:
+      waveform = model.synthesize(sen, language, 'phil')
+      wavs += waveform
+      wavs += [0] * 10000
+
+    process_time = time.time() - start_time
+    audio_time = len(wavs) / model.sample_rate
+
+    print(f" > Real-time factor: {process_time / audio_time}")
+
+    model.save_wav(wav=wavs, path=file_path)
 
     db.update_fragment(fragment_id, file=file_path)
 
