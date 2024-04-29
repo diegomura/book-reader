@@ -10,6 +10,9 @@ chapters_table = db.table('chapters')
 
 fragments_table = db.table('fragments')
 
+def get_all_books():
+    return books_table.all()
+
 def upsert_book(book):
     metadata = book["metadata"]
     content = book["content"]
@@ -38,6 +41,20 @@ def upsert_book(book):
         chapter_count += 1
 
     return book_id
+
+def get_book(id):
+    return books_table.get(doc_id=id)
+
+def remove_book(id):
+    fragments_table.remove(Query().book_id == id)
+    chapters_table.remove(Query().book_id == id)
+    books_table.remove(doc_ids=[id])
+
+def get_book_progress(id):
+    fragments = list(get_fragments(book_id=id))
+    completed = [fragment for fragment in fragments if "file" in fragment]
+    progress = len(completed) / len(fragments)
+    return { "progress": progress, "completed": len(completed), "total": len(fragments) }
 
 def get_chapters(book_id):
     return chapters_table.search(Query().book_id == book_id)

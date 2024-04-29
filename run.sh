@@ -1,1 +1,1 @@
-./.venv/bin/python ./src/main.py
+PYTHONPATH=./src ./.venv/bin/python ./src/main.py

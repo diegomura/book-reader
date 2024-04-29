@@ -12,6 +12,9 @@ speakers = {
   'sarah': './voices/emma',
   'david': './voices/geralt',
   'diego': './voices/diego',
+  'alfredo': './voices/alfredo',
+  'phil': './voices/phil',
+  'stephen': './voices/stephen',
 }
 
 def get_speaker(voice):
@@ -25,7 +28,6 @@ def start(dependencies):
   db = dependencies["db"]
 
   def process(sender, data):
-    print('tts', data)
     force = data["force"]
     fragment_id = data["fragment_id"]
     fragment = db.get_fragment(fragment_id)
@@ -36,7 +38,7 @@ def start(dependencies):
     # TODO: add voices once supported
     # voice = data['voice']
 
-    voice = "william"
+    voice = "phil"
     speaker = get_speaker(voice)
     file_name = f'{fragment["book_id"]}_{fragment["chapter_id"]}_{fragment["index"]}.wav'
     file_path = os.path.join(os.path.dirname(__file__), file_name)
@@ -44,7 +46,7 @@ def start(dependencies):
     tts.tts_to_file(
       text=fragment['value'],
       speaker_wav=speaker,
-      language="es",
+      language="en",
       file_path=file_path,
       speed=1.0, # TODO: play with different speeds
       split_sentences=True # TODO: make clever sentence splitting by respecting maximums

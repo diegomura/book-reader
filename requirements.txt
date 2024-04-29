@@ -9,3 +9,4 @@ numpy
 openai-whisper
 levenshtein
 unidecode
+click
