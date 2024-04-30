@@ -1,4 +1,5 @@
 import whisper
+from num2words import num2words
 from unidecode import unidecode
 from Levenshtein import distance
 
@@ -7,6 +8,19 @@ model = whisper.load_model("base")
 chars_to_remove = set(['¡', '!', '.', ',', ':', '…', '—', '-', '¿', '?', '"', "'", '(', ')'])
 
 distance_threshold = 10
+
+def compose (*functions):
+  def inner(arg):
+    for f in reversed(functions):
+      arg = f(arg)
+    return arg
+  return inner
+
+def lower(string):
+  return string.lower()
+
+def trim(string):
+  return string.rstrip().lstrip()
 
 def get_distance_threshold(string):
   return max(len(string) // 10, 10)
@@ -17,8 +31,17 @@ def remove_punctuation(string):
 def remove_consecutive_spaces(string):
   return ' '.join(string.split())
 
-def prepare_string(string):
-  return remove_consecutive_spaces(remove_punctuation(unidecode(string).lower().rstrip().lstrip()))
+def nums_to_words(string):
+  return ' '.join([num2words(word, lang='en') if word.isdigit() else word for word in string.split()])
+
+prepare_string = compose(
+  remove_consecutive_spaces,
+  remove_punctuation,
+  trim,
+  lower,
+  nums_to_words,
+  unidecode
+)
 
 def start(dependencies):
   db = dependencies["db"]
