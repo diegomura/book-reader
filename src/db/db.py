@@ -56,12 +56,18 @@ def get_book_progress(id):
     progress = len(completed) / len(fragments)
     return { "progress": progress, "completed": len(completed), "total": len(fragments) }
 
+def get_chapter(id):
+    return chapters_table.get(doc_id=id)
+
 def get_chapters(book_id):
     return chapters_table.search(Query().book_id == book_id)
 
 def update_chapter(id, file):
     return chapters_table.update({ "file": file }, doc_ids=[id])
 
+def remove_chapter(id):
+    fragments_table.remove(Query().chapter_id == id)
+    chapters_table.remove(doc_ids=[id])
 
 def get_all_fragments():
     return fragments_table.all()

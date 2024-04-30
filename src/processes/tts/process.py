@@ -29,7 +29,12 @@ def start(dependencies):
 
     wavs = []
     for sen in sens:
-      waveform = model.synthesize(sen, language, 'phil')
+      try:
+        waveform = model.synthesize(sen, language, 'phil')
+      except:
+        print(f"Error synthesizing sentence: {sen}")
+        return
+
       wavs += waveform
       wavs += [0] * 10000
 

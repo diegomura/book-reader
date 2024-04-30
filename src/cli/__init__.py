@@ -33,5 +33,18 @@ def rm(id):
         db.remove_book(id)
         click.echo("Book removed")
 
+@main.command(help="Remove a chapter")
+@click.option("--id", prompt="Enter chapter id", type=int)
+def rmc(id):
+    chapter = db.get_chapter(id)
+
+    if not chapter:
+        click.echo(f"Chapter with id {id} found")
+        return
+
+    if click.confirm('Do you want to continue?'):
+        db.remove_chapter(id)
+        click.echo("Chapter removed")
+
 if __name__ == "__main__":
     main()

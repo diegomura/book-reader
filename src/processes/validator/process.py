@@ -4,7 +4,7 @@ from Levenshtein import distance
 
 model = whisper.load_model("base")
 
-chars_to_remove = set(['¡', '!', '.', ',', ':', '…', '—', '-', '¿', '?', '"', "'"])
+chars_to_remove = set(['¡', '!', '.', ',', ':', '…', '—', '-', '¿', '?', '"', "'", '(', ')'])
 
 distance_threshold = 10
 
