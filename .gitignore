@@ -1,6 +1,7 @@
 .venv
 __pycache__
-*.wav
+src/outputs/**/*.wav
+src/dependencies/tts/voices/alfredo/*.wav
 *.m4a
 *.epub
 db.json
