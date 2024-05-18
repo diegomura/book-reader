@@ -1,4 +1,5 @@
 import whisper
+from termcolor import cprint
 from num2words import num2words
 from unidecode import unidecode
 from Levenshtein import distance
@@ -7,9 +8,9 @@ model = whisper.load_model("base")
 
 chars_to_remove = set(['¡', '!', '.', ',', ':', '…', '—', '-', '¿', '?', '"', "'", '(', ')'])
 
-distance_threshold = 10
+distance_threshold = 8
 
-length_threshold = 12
+length_threshold = 15
 
 def compose (*functions):
   def inner(arg):
@@ -50,7 +51,7 @@ def start(dependencies):
   dispatcher = dependencies["dispatcher"]
 
   def process(sender, data):
-    print('validate', data)
+    cprint('  Validating Audio', 'yellow')
 
     fragment_id = data
     fragment = db.get_fragment(fragment_id)
@@ -59,15 +60,16 @@ def start(dependencies):
 
     source = prepare_string(fragment["value"])
     target = prepare_string(transcription["text"])
-
     dist = distance(source, target)
+    threshold = get_distance_threshold(source)
 
-    if dist > get_distance_threshold(source):
-       print('regenerating', data)
-       print(source)
-       print(target)
-       print(dist)
-       dispatcher.send(signal='tts', data={ "fragment_id": fragment.doc_id, "force": True })
+    cprint(f'    Fragment:      {source}')
+    cprint(f'    Transcription: {target}')
+    cprint(f'    Distance:      {dist}/{threshold}')
+
+    if dist > threshold:
+      cprint(f'    Regenerating')
+      dispatcher.send(signal='tts', data={ "fragment_id": fragment.doc_id, "force": True })
 
 
 

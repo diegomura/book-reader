@@ -22,6 +22,7 @@ def concatenate_to_segments(strings, limit=5):
     result.append(current_segment)
 
   return result
+
 class TTSModel:
   def __init__(self):
     self.tts = TTS("tts_models/multilingual/multi-dataset/xtts_v2").to(device)

@@ -11,3 +11,4 @@ levenshtein
 unidecode
 click
 num2words
+termcolor

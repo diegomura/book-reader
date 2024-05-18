@@ -1,5 +1,6 @@
 import os
 import time
+from termcolor import cprint
 from pydispatch import dispatcher
 from .model import model
 
@@ -14,7 +15,11 @@ def start(dependencies):
     fragment = db.get_fragment(fragment_id)
 
     # If fragment was processed, skip it
-    if not force and "file" in fragment: return
+    if not force and "file" in fragment: 
+      cprint('  Skipped')
+      return
+    
+    cprint('  Generating Audio', 'yellow')
 
     file_name = f'{fragment["book_id"]}_{fragment["chapter_id"]}_{fragment["index"]}.wav'
     file_path = os.path.join(os.path.dirname(__file__), file_name)
@@ -25,14 +30,14 @@ def start(dependencies):
 
     #  Split text into sentences
     sens = model.split_into_sentences(text)
-    print(sens)
+    cprint(f'    Sentence: {sens}')
 
     wavs = []
     for sen in sens:
       try:
         waveform = model.synthesize(sen, language, 'phil')
       except:
-        print(f"Error synthesizing sentence: {sen}")
+        cprint(f"    Error synthesizing sentence", 'red')
         return
 
       wavs += waveform
@@ -41,7 +46,7 @@ def start(dependencies):
     process_time = time.time() - start_time
     audio_time = len(wavs) / model.sample_rate
 
-    print(f" > Real-time factor: {process_time / audio_time}")
+    cprint(f"    Real-time factor: {process_time / audio_time}")
 
     model.save_wav(wav=wavs, path=file_path)
 
