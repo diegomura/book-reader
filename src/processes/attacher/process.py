@@ -20,10 +20,6 @@ def start(dependencies):
 
     cprint('Attaching Fragments', 'green')
 
-    if "file" in chapter: 
-      cprint("  Skipped")
-      return
-
     chapter_id = chapter.doc_id
     narration_data = [start_silence]
     fragments = db.get_fragments(book_id, chapter_id)

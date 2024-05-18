@@ -21,6 +21,8 @@ def start(dependencies):
 
         cprint("")
 
+      if "file" in chapter: continue
+
       dispatcher.send(signal='attach', data=chapter_id)
 
       cprint("")
