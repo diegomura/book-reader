@@ -9,6 +9,8 @@ chars_to_remove = set(['¡', '!', '.', ',', ':', '…', '—', '-', '¿', '?', '
 
 distance_threshold = 10
 
+length_threshold = 12
+
 def compose (*functions):
   def inner(arg):
     for f in reversed(functions):
@@ -23,7 +25,7 @@ def trim(string):
   return string.rstrip().lstrip()
 
 def get_distance_threshold(string):
-  return max(len(string) // 10, 10)
+  return max(len(string) // length_threshold, distance_threshold)
 
 def remove_punctuation(string):
   return ''.join([c for c in string if c not in chars_to_remove])
@@ -35,11 +37,11 @@ def nums_to_words(string):
   return ' '.join([num2words(word, lang='en') if word.isdigit() else word for word in string.split()])
 
 prepare_string = compose(
+  nums_to_words,
   remove_consecutive_spaces,
   remove_punctuation,
   trim,
   lower,
-  nums_to_words,
   unidecode
 )
 
