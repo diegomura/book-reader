@@ -7,15 +7,9 @@ def start(dependencies):
   fs = dependencies["fs"].namespace('fragments')
 
   def process(sender, data):
-    force = data["force"]
     fragment_id = data["fragment_id"]
     fragment = db.get_fragment(fragment_id)
 
-    # If fragment was processed, skip it
-    if not force and "file" in fragment: 
-      cprint('  Skipped')
-      return
-    
     cprint('  Generating Audio', 'yellow')
 
     file_path = fs.get_path_for(f'{fragment["book_id"]}_{fragment["chapter_id"]}_{fragment["index"]}.wav')

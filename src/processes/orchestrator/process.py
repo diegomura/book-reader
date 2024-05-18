@@ -13,9 +13,11 @@ def start(dependencies):
       fragments = db.get_fragments(book_id=book_id, chapter_id=chapter_id)
 
       for fragment in fragments:
+        if "file" in fragment: continue
+
         cprint(f'Book {book_id}, Chapter {chapter_id}, Fragment {fragment["index"]}', "green")
 
-        dispatcher.send(signal='tts', data={ "fragment_id": fragment.doc_id, "force": False })
+        dispatcher.send(signal='tts', data={ "fragment_id": fragment.doc_id })
 
         cprint("")
 

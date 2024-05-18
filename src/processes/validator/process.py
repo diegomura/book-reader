@@ -69,7 +69,7 @@ def start(dependencies):
 
     if dist > threshold:
       cprint(f'    Regenerating')
-      dispatcher.send(signal='tts', data={ "fragment_id": fragment.doc_id, "force": True })
+      dispatcher.send(signal='tts', data={ "fragment_id": fragment.doc_id })
 
 
 
