@@ -6,7 +6,8 @@ from Levenshtein import distance
 
 model = whisper.load_model("base")
 
-chars_to_remove = set(['¡', '!', '.', ',', ':', '…', '—', '-', '¿', '?', '"', "'", '(', ')'])
+# TODO: deal with $ being generated as "dollars"
+chars_to_remove = set(['¡', '!', '.', ',', ':', '…', '—', '-', '¿', '?', '"', "'", '(', ')', '$'])
 
 distance_threshold = 8
 
