@@ -1,3 +1,4 @@
+import re
 import whisper
 from termcolor import cprint
 from num2words import num2words
@@ -6,8 +7,7 @@ from Levenshtein import distance
 
 model = whisper.load_model("base")
 
-# TODO: deal with $ being generated as "dollars"
-chars_to_remove = set(['¡', '!', '.', ',', ':', '…', '—', '-', '¿', '?', '"', "'", '(', ')', '$'])
+chars_to_remove = set(['¡', '!', '.', ',', ':', '…', '—', '-', '¿', '?', '"', "'", '(', ')'])
 
 distance_threshold = 8
 
@@ -38,10 +38,22 @@ def remove_consecutive_spaces(string):
 def nums_to_words(string):
   return ' '.join([num2words(word, lang='en') if word.isdigit() else word for word in string.split()])
 
+def override_currency(string):
+  pattern = r'\$(\d+(\.\d+)?)'
+
+  def replace_match(match):
+    number = match.group(1)
+    return f"{number} dollars"
+
+  replaced_text = re.sub(pattern, replace_match, string)
+
+  return replaced_text
+
 prepare_string = compose(
   nums_to_words,
   remove_consecutive_spaces,
   remove_punctuation,
+  override_currency,
   trim,
   lower,
   unidecode
