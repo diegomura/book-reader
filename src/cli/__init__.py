@@ -1,5 +1,5 @@
 import click
-from db import db
+from dependencies.db import db
 
 @click.group()
 def main():

@@ -1,5 +1,5 @@
 import os
-from dependencies import dependencies
+from dependencies.dependencies import dependencies
 from processes import epub, orchestrator, tts, attacher, validator
 
 epub.start(dependencies)
