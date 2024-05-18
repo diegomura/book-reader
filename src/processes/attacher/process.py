@@ -11,6 +11,7 @@ end_silence = np.zeros(int(sampling_rate * 4), dtype=np.int16)
 def start(dependencies):
   db = dependencies["db"]
   dispatcher = dependencies["dispatcher"]
+  fs = dependencies["fs"].namespace('chapters')
 
   def process(sender, data):
     chapter_id = data
@@ -35,7 +36,7 @@ def start(dependencies):
     narration_data.append(end_silence)
 
     narration_data = np.concatenate(narration_data)
-    file_path = os.path.join(os.path.dirname(__file__), f'{book_id}_{chapter_id}.wav')
+    file_path = fs.get_path_for(f'{book_id}_{chapter_id}.wav')
 
     cprint(f"  Saved: {file_path}")
 

@@ -1,4 +1,3 @@
-import os
 import time
 from termcolor import cprint
 from pydispatch import dispatcher
@@ -6,6 +5,7 @@ from .model import model
 
 def start(dependencies):
   db = dependencies["db"]
+  fs = dependencies["fs"].namespace('fragments')
 
   model.register_speaker('phil', './voices/phil')
 
@@ -22,7 +22,7 @@ def start(dependencies):
     cprint('  Generating Audio', 'yellow')
 
     file_name = f'{fragment["book_id"]}_{fragment["chapter_id"]}_{fragment["index"]}.wav'
-    file_path = os.path.join(os.path.dirname(__file__), file_name)
+    file_path = fs.get_path_for(file_name)
     text = fragment['value']
 
     language = 'en'
