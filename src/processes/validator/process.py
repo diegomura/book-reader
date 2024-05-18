@@ -10,7 +10,7 @@ chars_to_remove = set(['¡', '!', '.', ',', ':', '…', '—', '-', '¿', '?', '
 
 distance_threshold = 8
 
-length_threshold = 20
+length_threshold = 30
 
 def compose (*functions):
   def inner(arg):
