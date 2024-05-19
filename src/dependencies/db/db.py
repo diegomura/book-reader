@@ -62,6 +62,10 @@ def get_chapter(id):
 def get_chapters(book_id):
     return chapters_table.search(Query().book_id == book_id)
 
+def get_chapter_contents(id):
+    fragments = get_fragments(chapter_id=id)
+    return '\n'.join([fragment["value"] for fragment in fragments])
+
 def update_chapter(id, file):
     return chapters_table.update({ "file": file }, doc_ids=[id])
 
