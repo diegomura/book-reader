@@ -6,3 +6,4 @@ src/dependencies/tts/voices/alfredo/*.wav
 *.epub
 db.json
 .DS_Store
+log.md
