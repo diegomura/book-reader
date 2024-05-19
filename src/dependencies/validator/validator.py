@@ -49,11 +49,17 @@ def override_currency(string):
 
   return replaced_text
 
+def remove_ordinal_indicators(string):
+  pattern = re.compile(r'(\d+)(st|nd|rd|th)\b', re.IGNORECASE)
+  return pattern.sub(r'\1', string)
+
+
 prepare_string = compose(
   nums_to_words,
   remove_consecutive_spaces,
   remove_punctuation,
   override_currency,
+  remove_ordinal_indicators,
   trim,
   lower,
   unidecode

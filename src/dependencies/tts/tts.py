@@ -1,3 +1,4 @@
+import re
 import time
 from termcolor import cprint
 from .model import model
@@ -6,11 +7,8 @@ model.register_speaker('phil', './voices/phil')
 
 # For some reason TTS model does not like this
 def remove_quotations(text):
-  if text.startswith('"'):
-    text = text[1:]
-  if text.endswith('"'):
-    text = text[:-1]
-  return text
+  pattern = re.compile(r'["\'](.*?)["\']')
+  return pattern.sub(r'\1', text)
    
 
 def generate(text, language, file_path):
