@@ -17,7 +17,7 @@ def start(dependencies):
 
         cprint(f'Book {book_id}, Chapter {chapter_id}, Fragment {fragment["index"]}', "green")
 
-        dispatcher.send(signal='tts', data={ "fragment_id": fragment.doc_id })
+        dispatcher.send(signal='tts', data={ "fragment_id": fragment.doc_id, "iteration": 0 })
 
         cprint("")
 

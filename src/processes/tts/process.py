@@ -1,14 +1,19 @@
 from termcolor import cprint
 from pydispatch import dispatcher
 
+ITERATION_THRESHOLD = 5
+
 def start(dependencies):
   db = dependencies["db"]
   tts = dependencies["tts"]
   fs = dependencies["fs"].namespace('fragments')
 
   def process(sender, data):
+    iteration = data["iteration"]
     fragment_id = data["fragment_id"]
     fragment = db.get_fragment(fragment_id)
+
+    if iteration >= ITERATION_THRESHOLD: return
 
     cprint('  Generating Audio', 'yellow')
 
@@ -22,6 +27,6 @@ def start(dependencies):
 
     db.update_fragment(fragment_id, file=file_path)
 
-    dispatcher.send(signal='validate', data=fragment_id)
+    dispatcher.send(signal='validate', data={ "fragment_id": fragment_id, "iteration": iteration })
 
   dispatcher.connect(process, signal='tts', weak=False)
