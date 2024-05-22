@@ -3,7 +3,7 @@ import time
 from termcolor import cprint
 from .model import model
 
-model.register_speaker('diego', './voices/diego')
+model.register_speaker('alfredo', './voices/alfredo')
 
 def compose (*functions):
   def inner(arg):
@@ -39,7 +39,7 @@ def generate(text, language, file_path):
 
     wavs = []
     for sen in sens:
-      waveform = model.synthesize(sen, language, 'diego')
+      waveform = model.synthesize(sen, language, 'alfredo')
       wavs += waveform
       wavs += [0] * 10000
 

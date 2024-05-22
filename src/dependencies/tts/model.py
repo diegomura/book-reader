@@ -6,7 +6,7 @@ cwd = os.path.dirname(__file__)
 
 device = "cuda" if torch.cuda.is_available() else "cpu"
 
-def concatenate_to_segments(strings, limit=5):
+def concatenate_to_segments(strings, limit=220):
   result = []
   current_segment = ""
 
