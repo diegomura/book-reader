@@ -20,7 +20,6 @@ def start(dependencies):
 
     cprint('Attaching Fragments', 'green')
 
-    chapter_id = chapter.doc_id
     narration_data = [start_silence]
     fragments = db.get_fragments(book_id, chapter_id)
 
@@ -32,7 +31,7 @@ def start(dependencies):
     narration_data.append(end_silence)
 
     narration_data = np.concatenate(narration_data)
-    file_path = fs.get_path_for(f'{book_id}_{chapter_id}.wav')
+    file_path = fs.get_path_for(f'{book_id}_{chapter["index"]}.wav')
 
     cprint(f"  Saved: {file_path}")
 

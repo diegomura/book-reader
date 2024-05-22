@@ -11,13 +11,15 @@ def start(dependencies):
   def process(sender, data):
     iteration = data["iteration"]
     fragment_id = data["fragment_id"]
+    chapter_id = fragment["chapter_id"]
     fragment = db.get_fragment(fragment_id)
+    chapter = db.get_chapter(chapter_id)
 
     if iteration >= ITERATION_THRESHOLD: return
 
     cprint('  Generating Audio', 'yellow')
 
-    file_path = fs.get_path_for(f'{fragment["book_id"]}_{fragment["chapter_id"]}_{fragment["index"]}.wav')
+    file_path = fs.get_path_for(f'{fragment["book_id"]}_{chapter["index"]}_{fragment["index"]}.wav')
 
     try:
       tts.generate(text=fragment['value'], language="en", file_path=file_path)
