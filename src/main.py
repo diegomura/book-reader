@@ -8,4 +8,4 @@ tts.start(dependencies)
 attacher.start(dependencies)
 validator.start(dependencies)
 
-dependencies['dispatcher'].send(signal='epub', data=os.path.join(os.path.dirname(__file__), "hq.epub"))
+dependencies['dispatcher'].send(signal='epub', data=os.path.join(os.path.dirname(__file__), "bhdm.epub"))

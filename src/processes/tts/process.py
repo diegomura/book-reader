@@ -11,7 +11,7 @@ def start(dependencies):
   def process(sender, data):
     iteration = data["iteration"]
     fragment_id = data["fragment_id"]
-    chapter_id = fragment["chapter_id"]
+    chapter_id = data["chapter_id"]
     fragment = db.get_fragment(fragment_id)
     chapter = db.get_chapter(chapter_id)
 
@@ -22,7 +22,7 @@ def start(dependencies):
     file_path = fs.get_path_for(f'{fragment["book_id"]}_{chapter["index"]}_{fragment["index"]}.wav')
 
     try:
-      tts.generate(text=fragment['value'], language="en", file_path=file_path)
+      tts.generate(text=fragment['value'], language="es", file_path=file_path)
     except:
       cprint(f"    Error synthesizing sentence", 'red')
       return

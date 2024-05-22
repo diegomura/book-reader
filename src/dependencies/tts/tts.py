@@ -3,7 +3,7 @@ import time
 from termcolor import cprint
 from .model import model
 
-model.register_speaker('phil', './voices/phil')
+model.register_speaker('phil', './voices/diego')
 
 # For some reason TTS model does not like this
 def remove_quotations(text):
@@ -23,7 +23,7 @@ def generate(text, language, file_path):
 
     wavs = []
     for sen in sens:
-      waveform = model.synthesize(sen, language, 'phil')
+      waveform = model.synthesize(sen, language, 'diego')
       wavs += waveform
       wavs += [0] * 10000
 

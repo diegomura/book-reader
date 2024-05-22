@@ -11,7 +11,7 @@ def start(dependencies):
     iteration = data["iteration"]
     fragment_id = data["fragment_id"]
     fragment = db.get_fragment(fragment_id)
-    is_valid = validator.validate(audio_file=fragment["file"], text=fragment["value"], language="en")
+    is_valid = validator.validate(audio_file=fragment["file"], text=fragment["value"], language="es")
 
     if not is_valid :
       cprint(f'    Regenerating')
