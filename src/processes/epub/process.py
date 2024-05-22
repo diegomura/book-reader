@@ -1,5 +1,4 @@
 import ebooklib
-from unidecode import unidecode
 from bs4 import BeautifulSoup
 from ebooklib import epub
 
@@ -44,7 +43,7 @@ def get_content(book):
 
     for element in soup.html.descendants:
       if element.name in VALID_ELEMENTS:
-        value = unidecode(element.get_text()).replace("\n", " ").strip()
+        value = element.get_text().replace("\n", " ").strip()
 
         if not value: continue
 

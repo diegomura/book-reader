@@ -11,8 +11,8 @@ def start(dependencies):
   def process(sender, data):
     iteration = data["iteration"]
     fragment_id = data["fragment_id"]
-    chapter_id = data["chapter_id"]
     fragment = db.get_fragment(fragment_id)
+    chapter_id = fragment["chapter_id"]
     chapter = db.get_chapter(chapter_id)
 
     if iteration >= ITERATION_THRESHOLD: return
@@ -23,8 +23,8 @@ def start(dependencies):
 
     try:
       tts.generate(text=fragment['value'], language="es", file_path=file_path)
-    except:
-      cprint(f"    Error synthesizing sentence", 'red')
+    except Exception as error:
+      cprint(f"    Error synthesizing sentence: {error}", 'red')
       return
 
     db.update_fragment(fragment_id, file=file_path)
